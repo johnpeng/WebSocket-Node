@@ -1,7 +1,16 @@
 Changelog
 =========
 
-Version 1.0.8
+Version 1.1.0
+-------------
+
+*Released 2013-7-3*
+- Removed C related modules to make it PURE Javascript
+
+
+*Below are revisions made by original author Worlize*
+
+Version 1.0.9
 -------------
 *Released 2012-12-26*
 

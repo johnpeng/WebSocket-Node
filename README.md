@@ -1,12 +1,16 @@
-WebSocket Client & Server Implementation for Node
+Pure JavaScript WebSocket Client & Server Implementation for Node
 =================================================
 
 Overview
 --------
-This is a (mostly) pure JavaScript implementation of the WebSocket protocol versions 8 and 13 for Node.  There are some example client and server applications that implement various interoperability testing protocols in the "test" folder.
+This is a PURE JavaScript implementation of the WebSocket protocol versions 8 and 13 for Node forked out of [Worlize's WebSocket-Node](https://github.com/Worlize/WebSocket-Node).  There are some example client and server applications that implement various interoperability testing protocols in the "test" folder.
 
 Current News
 ------------
+
+- Pure JavaScript in version 1.1.0
+
+- ** Below are news written by Worlize, the original author
 
 - As of version 1.0.7, ***Native modules are now optional.*** If they fail to compile, WebSocket-Node will still work but will not verify that received UTF-8 data is valid, and xor masking/unmasking of payload data for security purposes will not be as efficient as it is performed in JavaScript instead of native code.
 
