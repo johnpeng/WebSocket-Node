@@ -69,7 +69,8 @@ var mirrorConnections = [];
 var mirrorHistory = [];
 
 router.mount('*', 'lws-mirror-protocol', function(request) {
-    var cookies = [
+    var historyString
+    , cookies = [
         {
             name: "TestCookie",
             value: "CookieValue" + Math.floor(Math.random()*1000),
@@ -83,16 +84,16 @@ router.mount('*', 'lws-mirror-protocol', function(request) {
     // Should do origin verification here. You have to pass the accepted
     // origin into the accept method of the request.
     var connection = request.accept(request.origin, cookies)
+
     console.log(utils.now(), "lws-mirror-protocol connection accepted from", connection.remoteAddress
     , "- Protocol Version", connection.webSocketVersion)
 
     if (mirrorHistory.length > 0) {
-        var historyString = mirrorHistory.join('')
+        historyString = mirrorHistory.join('')
+        connection.send(historyString, sendCallback)
 
         console.log(utils.now(), "sending mirror protocol history to client", connection.remoteAddress
         , ":", Buffer.byteLength(historyString), "bytes")
-        
-        connection.send(historyString, sendCallback)
     }
     
     mirrorConnections.push(connection)

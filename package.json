@@ -15,7 +15,7 @@
       "verbose" : false
     },
     "scripts": {
-        "install": "node install.js"
+        "start": "node ./test/libwebsockets-test-server.js"
     },
     "main": "index",
     "directories": {
