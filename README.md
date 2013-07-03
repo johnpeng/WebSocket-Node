@@ -10,7 +10,7 @@ Current News
 
 - Pure JavaScript in version 1.1.0
 
-- ** Below are news written by Worlize, the original author
+- **Below are news written by Worlize, the original author**
 
 - As of version 1.0.7, ***Native modules are now optional.*** If they fail to compile, WebSocket-Node will still work but will not verify that received UTF-8 data is valid, and xor masking/unmasking of payload data for security purposes will not be as efficient as it is performed in JavaScript instead of native code.
 
