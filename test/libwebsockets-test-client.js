@@ -16,13 +16,13 @@
  ***********************************************************************/
 
 var WebSocketClient = require('../lib/WebSocketClient')
-, utils = require('./utils')
-, args = utils.args(process.argv, { /* defaults */
-    secure:     false
-    , version:  13
-    , host:     'localhost'
-    , port:     8000
-})
+	, utils = require('./utils')
+	, args = utils.args(process.argv, { /* defaults */
+	    secure:     false
+	    , version:  13
+	    , host:     'localhost'
+	    , port:     8000
+	})
 
 args.protocol = args.secure ? 'wss:' : 'ws:'
 args.version = parseInt(args.version, 10);

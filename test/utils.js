@@ -4,9 +4,10 @@ module.exports = {
 	now: now
 	, args: args
 	, notfound: notfound
+	, errorHandler: errorHandler
 }
 
-function now() { return Date.now().toLocaleString() }
+function now() { return new Date().toLocaleString() }
 
 function args(argv, defaults) {
 	defaults = defaults || {}
@@ -23,4 +24,10 @@ function args(argv, defaults) {
 function notfound(response, message) {
     response.writeHead(404)
     response.end(message)
+}
+
+function errorHandler(message) {
+	return function (error) {
+		console.error(message || 'Error Handler:', error.message)
+	}
 }

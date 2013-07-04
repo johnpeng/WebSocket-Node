@@ -23,9 +23,9 @@ Current News
 Changelog
 ---------
 
-Current Version: 1.0.8
+Current Version: 1.1.0
 
-[View the changelog](https://github.com/Worlize/WebSocket-Node/blob/master/CHANGELOG.md)
+[View the changelog](https://github.com/johnpeng/WebSocket-Node/blob/master/CHANGELOG.md)
 
 Browser Support
 ---------------
@@ -246,4 +246,4 @@ For an example of using the request router, see `libwebsockets-test-server.js` i
 Resources
 ---------
 
-A presentation on the state of the WebSockets protocol that I gave on July 23, 2011 at the LA Hacker News meetup.  [WebSockets: The Real-Time Web, Delivered](http://www.scribd.com/doc/60898569/WebSockets-The-Real-Time-Web-Delivered)
+A presentation on the state of the WebSockets protocol that Worlize gave on July 23, 2011 at the LA Hacker News meetup.  [WebSockets: The Real-Time Web, Delivered](http://www.scribd.com/doc/60898569/WebSockets-The-Real-Time-Web-Delivered)
