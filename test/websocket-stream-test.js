@@ -28,7 +28,6 @@ var WebSocketServer = require('../lib/WebSocketServer')
 	, pathTxtFile = "../README.md"
 	, pathBinFile = "browser-icon-firefox.png"
 	, resource = "UTF8-Stream-Test"
-	, testFile = pathBinFile
 
 console.log("WebSocket-Stream-Node: Test Stream Server")
 
@@ -77,12 +76,27 @@ router.mount('*', resource, function(request) {
    
 	var connection = request.accept(request.origin)
 		, wssSend = new WebSocketStream(connection)
-		, testStream = fs.createReadStream(testFile)
+		, txtStream = fs.createReadStream(pathTxtFile)
+		, wssRead = new WebSocketStream(connection)
+		, binstream = fs.createReadStream(pathBinFile)
 
-    console.log(utils.now(), "connection accepted from", connection.remoteAddress)
+    console.log(utils.now(), "connection accepted from", connection.remoteAddress, ':', connection.socket.remotePort)
 
-	console.log('server is piping', testFile)
-	testStream.pipe(wssSend)
+	console.log('server is piping', pathTxtFile)
+	txtStream.pipe(wssSend)
+
+	streamEqual(binstream, wssRead, assertResult)
+
+	function assertResult(error) {
+		if (error) {
+			utils.errorHandler('Server Assertion Error of' + pathTxtFile)(error)
+			process.exit(1)
+		} 
+		else {
+			console.log('Server Assertion Passed')
+			process.exit(0)
+		}
+	}
 
 	connection.on('close', function(reasonCode, description) {
 		console.log(utils.now(), "Client disconnected.");
@@ -103,52 +117,28 @@ function startClient() {
 	client.on('connectFailed', utils.errorHandler("WebSocket Client error"))
 
 	client.on('connect', function(connection) {
-	    console.log(utils.now(), "connection accepted by", connection.remoteAddress)
+	    console.log(utils.now(), "connection accepted by", connection.remoteAddress, ':', connection.socket.remotePort)
 	   
 		var wsstream = new WebSocketStream(connection)
-			, md5wsfinal, md5test, md5testfinal
-			, md5ws = crypto.createHash('md5')
+			, sourcestream = fs.createReadStream(pathTxtFile)
 
-		wsstream.on('error', utils.errorHandler('WebSocket Stream Client side Error:'))
-		wsstream.on('end', assertResult)
+		streamEqual(wsstream, sourcestream, assertResult)
 
-		wsstream.pipe(md5ws, {end: false})
+		function assertResult(error) {
+			if (error) utils.errorHandler('Client Assertion Error of' + testFile)(error)
+			else console.log('Client Assertion Passed')
 
+			// send back a binary stream for testing
+			var wsbinstream = new WebSocketStream(connection)
+			console.log('client is piping', pathBinFile)
+			fs.createReadStream(pathBinFile).pipe(wsbinstream)
+		}
 		connection.on('close', function(reasonCode, description) {
 			console.log(utils.now(), "Client disconnected.", reasonCode, description);
 		})
 
 		connection.on('error', utils.errorHandler('client connection error'))
 
-		function assertResult () {
-			var testStream = fs.createReadStream(testFile)
-			
-			md5test = crypto.createHash('md5')
-			md5test.on('error', utils.errorHandler('MD5 on text stream Error:'))
-			
-			md5ws.end()
-			md5wsfinal = md5ws.read().toString('base64')
-
-			console.log('WebSocket Server txt Stream MD5 is', md5wsfinal)
-
-			testStream.on('error', utils.errorHandler('Client reading txt file Error:'))
-			testStream.on('end', assertFinalResult)
-
-			testStream.pipe(md5test, {end: false})
-		}
-
-		function assertFinalResult () {
-			md5test.end()
-			md5testfinal = md5test.read().toString('base64')
-			console.log('The source txt file MD5 is', md5testfinal)
-
-			assert.equal(md5testfinal, md5wsfinal
-				, 'The md5 of server pushed file and source file does not equal')
-
-			console.log('Test of downloading', testFile, 'is passed.')
-			//assert passed, exit normally
-			process.exit(0)
-		}
 	})
 
 	var wshostaddress = args.protocol + '//' + args.host + ':' + args.port
@@ -158,3 +148,31 @@ function startClient() {
 
 }
 
+function streamEqual(stm1, stm2, callback) {
+	var hash1sum = crypto.createHash('md5')
+		, hash2sum = crypto.createHash('md5')
+		, firstHash
+
+	stm1.on('end', assertEqual(hash1sum))
+	stm1.pipe(hash1sum, {end:false})
+
+	stm2.on('end', assertEqual(hash2sum))
+	stm2.pipe(hash2sum, {end:false})
+
+	function assertEqual(hashsum) {
+
+		return function () {
+			hashsum.end()
+			if (!firstHash) {
+				firstHash = hashsum.read().toString('base64')
+				console.log('got first hash:', firstHash)
+			} else {
+				var secondHash = hashsum.read().toString('base64')
+				console.log('got second hash:', secondHash)
+				if (firstHash === secondHash) callback()
+				else callback(new Error('First and second hash are not equal'))
+			}
+		}
+	}
+
+}
